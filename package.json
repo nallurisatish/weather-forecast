@@ -4,7 +4,7 @@
   "description": "WeatherSphere — Smart Weather Forecast (MERN Stack)",
   "scripts": {
     "start": "node server/server.js",
-    "build": "cd client && npm install --include=dev && npm run build && cd ../server && npm install",
+    "build": "node -e \"const fs = require('fs'); if (!fs.existsSync('client/dist/index.html')) { require('child_process').execSync('cd client && npm install && npm run build', {stdio:'inherit'}); }\" && cd server && npm install",
     "server": "npm --prefix server run dev",
     "client": "npm --prefix client run dev"
   },
