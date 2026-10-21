@@ -3,12 +3,21 @@
   "version": "1.0.0",
   "description": "WeatherSphere — Smart Weather Forecast (MERN Stack)",
   "scripts": {
+    "start": "npm --prefix server start",
+    "build": "npm --prefix client install && npm --prefix client run build && npm --prefix server install",
     "server": "npm --prefix server run dev",
     "client": "npm --prefix client run dev",
     "install:all": "npm --prefix server install && npm --prefix client install",
     "test:server": "npm --prefix server test"
   },
-  "keywords": ["weather", "mern", "react", "express", "mongodb", "ai"],
+  "keywords": [
+    "weather",
+    "mern",
+    "react",
+    "express",
+    "mongodb",
+    "ai"
+  ],
   "author": "WeatherSphere",
   "license": "MIT"
 }

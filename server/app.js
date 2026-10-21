@@ -4,9 +4,15 @@ import helmet from 'helmet';
 import cookieParser from 'cookie-parser';
 import rateLimit from 'express-rate-limit';
 
+import path from 'path';
+import { fileURLToPath } from 'url';
+
 import { requestLogger } from './utils/logger.js';
 import { getDbStatus } from './config/db.js';
 import { notFound, errorHandler } from './middleware/errorHandler.js';
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
 
 import authRoutes from './routes/authRoutes.js';
 import weatherRoutes from './routes/weatherRoutes.js';
@@ -117,6 +123,17 @@ app.use('/api/cities', citiesRoutes);
 app.use('/api/history', historyRoutes);
 app.use('/api/users', userRoutes);
 app.use('/api/ai', aiRoutes);
+
+// Serve frontend static build in production (Single Service on Render / Cloud)
+const clientDistPath = path.join(__dirname, '../client/dist');
+app.use(express.static(clientDistPath));
+
+app.get('*', (req, res, next) => {
+  if (req.path.startsWith('/api')) {
+    return next();
+  }
+  res.sendFile(path.join(clientDistPath, 'index.html'));
+});
 
 // 404 & Centralized Error Handlers
 app.use(notFound);
