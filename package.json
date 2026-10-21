@@ -3,12 +3,13 @@
   "version": "1.0.0",
   "description": "WeatherSphere — Smart Weather Forecast (MERN Stack)",
   "scripts": {
-    "start": "npm --prefix server start",
-    "build": "npm --prefix client install && npm --prefix client run build && npm --prefix server install",
+    "start": "node server/server.js",
+    "build": "cd client && npm install && npm run build && cd ../server && npm install",
     "server": "npm --prefix server run dev",
-    "client": "npm --prefix client run dev",
-    "install:all": "npm --prefix server install && npm --prefix client install",
-    "test:server": "npm --prefix server test"
+    "client": "npm --prefix client run dev"
+  },
+  "engines": {
+    "node": ">=18.0.0"
   },
   "keywords": [
     "weather",
