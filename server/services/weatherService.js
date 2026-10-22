@@ -113,7 +113,11 @@ export const searchCities = async (query) => {
         displayName: `${item.name}${item.state ? `, ${item.state}` : ''}, ${item.country}`
       }));
     } catch (err) {
-      console.warn('OpenWeatherMap geocoding failed, falling back to geocoding-api.open-meteo.com:', err.message);
+      if (err.response?.status === 401) {
+        console.warn('⚠️ OpenWeatherMap geocoding returned 401 (API key activating or invalid). Seamlessly using Open-Meteo geocoding.');
+      } else {
+        console.warn('OpenWeatherMap geocoding failed, falling back to geocoding-api.open-meteo.com:', err.message);
+      }
     }
   }
 
@@ -429,7 +433,11 @@ export const getWeather = async ({ city, lat, lon }) => {
     try {
       weatherData = await fetchFromOpenWeather(targetLat, targetLon, cityName, apiKey);
     } catch (err) {
-      console.warn('OpenWeatherMap API request failed, falling back to Open-Meteo:', err.message);
+      if (err.response?.status === 401) {
+        console.warn('⚠️ OpenWeatherMap returned 401 Unauthorized (likely newly generated API key activating or invalid key in WEATHER_API_KEY). Seamlessly serving live meteorological data via Open-Meteo fallback.');
+      } else {
+        console.warn('OpenWeatherMap API request failed, falling back to Open-Meteo:', err.message);
+      }
       weatherData = await fetchFromOpenMeteo(targetLat, targetLon, cityName, country);
     }
   } else {

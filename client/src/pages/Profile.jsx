@@ -1,12 +1,12 @@
 import React, { useState, useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
-import { User, Settings, Thermometer, Wind, Save, Check, LogOut, Clock, Trash2, Heart } from 'lucide-react';
+import { useNavigate, Link } from 'react-router-dom';
+import { User, Settings, Thermometer, Wind, Save, Check, LogOut, Clock, Trash2, Heart, LogIn, Loader2 } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
 import { useTheme } from '../context/ThemeContext';
 import { userAPI, historyAPI } from '../services/api';
 
 const Profile = () => {
-  const { user, updateUser, logout } = useAuth();
+  const { user, updateUser, logout, isAuthenticated, loading } = useAuth();
   const { tempUnit, setSpecificWindUnit, toggleTempUnit, windUnit } = useTheme();
   const navigate = useNavigate();
 
@@ -23,8 +23,9 @@ const Profile = () => {
     if (user?.preferredTemperatureUnit) setPreferredTemp(user.preferredTemperatureUnit);
     if (user?.preferredWindSpeedUnit) setPreferredWind(user.preferredWindSpeedUnit);
 
-    // Fetch search history
+    // Fetch search history only if logged in
     const loadHistory = async () => {
+      if (!isAuthenticated) return;
       try {
         const res = await historyAPI.getHistory(8);
         if (res.data?.success && res.data?.history) {
@@ -35,7 +36,7 @@ const Profile = () => {
       }
     };
     loadHistory();
-  }, [user]);
+  }, [user, isAuthenticated]);
 
   const handleUpdateProfile = async (e) => {
     e.preventDefault();
@@ -80,6 +81,52 @@ const Profile = () => {
     await logout();
     navigate('/');
   };
+
+  if (loading) {
+    return (
+      <div className="app-container" style={{ padding: '4rem 1.5rem', textAlign: 'center' }}>
+        <Loader2 size={36} className="animate-spin" style={{ color: 'var(--primary)', margin: '0 auto' }} />
+      </div>
+    );
+  }
+
+  if (!isAuthenticated) {
+    return (
+      <div className="app-container" style={{ padding: '4rem 1.5rem', textAlign: 'center' }}>
+        <div className="glass-panel" style={{ maxWidth: '520px', margin: '0 auto', padding: '3rem 2rem' }}>
+          <div
+            style={{
+              width: '64px',
+              height: '64px',
+              borderRadius: '50%',
+              background: 'rgba(99, 102, 241, 0.15)',
+              color: 'var(--primary)',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              margin: '0 auto 1.5rem auto'
+            }}
+          >
+            <User size={32} />
+          </div>
+          <h2 style={{ fontSize: '1.75rem', fontWeight: 800, marginBottom: '0.75rem' }}>
+            User Settings & Profile
+          </h2>
+          <p style={{ color: 'var(--text-secondary)', marginBottom: '2rem', lineHeight: 1.6 }}>
+            Please sign in to customize your temperature units, default wind speed preferences, and track your recent search history.
+          </p>
+          <div style={{ display: 'flex', justifyContent: 'center', gap: '1rem' }}>
+            <Link to="/login" className="btn-primary">
+              <LogIn size={16} /> Sign In
+            </Link>
+            <Link to="/register" className="btn-secondary">
+              Create Account
+            </Link>
+          </div>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="app-container" style={{ maxWidth: '880px', margin: '0 auto' }}>

@@ -123,9 +123,18 @@ export const logout = (req, res) => {
 };
 
 export const getMe = async (req, res) => {
+  if (!req.user) {
+    return res.status(200).json({
+      success: true,
+      user: null,
+      isAuthenticated: false
+    });
+  }
+
   res.status(200).json({
     success: true,
-    user: req.user
+    user: req.user,
+    isAuthenticated: true
   });
 };
 

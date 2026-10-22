@@ -12,10 +12,17 @@ export const AuthProvider = ({ children }) => {
   // Load user on init
   useEffect(() => {
     const fetchCurrentUser = async () => {
+      const storedToken = localStorage.getItem('weathersphere_token');
       try {
         const res = await authAPI.getMe();
         if (res.data?.success && res.data?.user) {
           setUser(res.data.user);
+        } else {
+          setUser(null);
+          if (storedToken) {
+            setToken(null);
+            localStorage.removeItem('weathersphere_token');
+          }
         }
       } catch (err) {
         // Not logged in or invalid token
