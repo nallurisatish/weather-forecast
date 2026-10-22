@@ -67,10 +67,14 @@ const Home = ({ onOpenAssistant }) => {
         }
       }
     } catch (err) {
-      setError(
-        err.response?.data?.message ||
-        'Unable to retrieve weather data. Please verify your connection or city name.'
-      );
+      const msg = err.response?.data?.message || err.message || '';
+      if (msg.includes('429')) {
+        setError('Weather data service rate limit reached. Reconnecting with backup meteorological network...');
+      } else {
+        setError(
+          msg || 'Unable to retrieve weather data. Please verify your connection or city name.'
+        );
+      }
     } finally {
       setLoading(false);
       setRefreshing(false);
